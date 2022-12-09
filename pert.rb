@@ -8,8 +8,7 @@ include PyCall::Import
 
 
 module PERT
-  ## 4 utility function will be used in code
-  #
+
   # Создаем CSV file чтобы сохранить output
   puts("Make sure Results.csv file is not open")
   @csv = CSV.open("Results.csv", "w")
@@ -31,7 +30,7 @@ module PERT
   end
 
   def PERT.inverse_cdf(u,alpha,beta)
-    # calculates inverse regularized beta function
+    # вычисляем обратную бета-функцию
     include PyCall::Import
     pyfrom :scipy, import: :special
     output = special.betaincinv(alpha, beta, u)
@@ -52,14 +51,13 @@ module PERT
 
 
 
-  ## Main Methods
+  ## Основные методы
   def PERT.inverse_method(a,b,c,number_of_experiments)
-    #interval = [a,c]
-    # b = mode
+    #интервал = [a,c]
     step = 1.0/number_of_experiments
     alpha = (4*b+c-5*a)/(c-a)
     beta = (5*c-a-4*b)/(c-a)
-    # here we ctreat a uniform ditribution in range [0,1] to sample from inverse of our cdf function
+    # здесь мы обрабатываем равномерное распределение в диапазоне [0,1] для выборки из обратной функции cdf
     unifrom = []
     Range.new(0,0.9999).step(step) {|x| unifrom.push(x)}
     # multiply c to all samples in order to normalize the output
@@ -75,7 +73,7 @@ module PERT
     samples = []
 
     burn_in = (number_of_experiments*0.2).to_int
-    # We increase number of expriments 20%, because at the end we want to remove 20% of them
+    #  Увеличиваем количество экспериментов на 20%, потому что в конце хотим убрать 20% из них
     number_of_experiments = (number_of_experiments * 1.2).to_int
 
     # choose a random number between min and max
@@ -94,7 +92,7 @@ module PERT
         current = movement
       end
     end
-    # burn the initial results since they may not be so accurate
+    # убираем первоначальные результаты, так как они могут быть не точными
     samples = samples[burn_in..]
     (bins, freqs) = samples.histogram(30)
     PERT.export_to_csv bins, freqs,"Metropolise Method"
@@ -123,29 +121,29 @@ module PERT
   end
 
   puts("This code samples from PERT distribution with 3 methods: Inverse, Metropolis and Neyman enter these parameters")
-  puts("Enter parameters")
-  print "a="
+  puts("Введіть параметри:")
+  print "a ="
   STDOUT.flush
   a = gets.chomp.to_f
-  print "b="
+  print "b ="
   STDOUT.flush
   b = gets.chomp.to_f
   while a >= b
-    puts("b should be greater than a")
-    print "b="
+    puts("Параметр b повинен бути більше, ніж a")
+    print "b ="
     STDOUT.flush
     b = gets.chomp.to_f
   end
-  print "c="
+  print "c ="
   STDOUT.flush
   c = gets.chomp.to_f
   while c<=a or c <= b
-    puts("C is the end of range. it should be greater than a and b")
-    print "c="
+    puts("Параметр с повинен бути більше , ніж  a та b")
+    print "c ="
     STDOUT.flush
     c = gets.chomp.to_f
   end
-  print "Number of experiments(Samples)="
+  print "Кількість експериментів ="
   STDOUT.flush
   n = (gets.chomp).to_i
 
@@ -164,7 +162,6 @@ module PERT
   }
   puts("Час виконання методів (с):",time.real)
   cmd = "Output.xlsx"
-
   system('start "" ' + cmd)
   puts("Results.csv file is saved")
 
