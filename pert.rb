@@ -10,7 +10,6 @@ include PyCall::Import
 module PERT
 
   # Создаем CSV file чтобы сохранить output
-  puts("Make sure Results.csv file is not open")
   @csv = CSV.open("Results.csv", "w")
   def PERT.export_to_csv(bins , freqs, method_name)
 
@@ -60,7 +59,6 @@ module PERT
     # здесь мы обрабатываем равномерное распределение в диапазоне [0,1] для выборки из обратной функции cdf
     unifrom = []
     Range.new(0,0.9999).step(step) {|x| unifrom.push(x)}
-    # multiply c to all samples in order to normalize the output
     pert_samples = unifrom.map { |i| (inverse_cdf i,alpha,beta).to_f * c }
     (bins, freqs) = pert_samples.histogram(30)
     export_to_csv bins, freqs, "Inverse Method"
@@ -76,7 +74,7 @@ module PERT
     #  Увеличиваем количество экспериментов на 20%, потому что в конце хотим убрать 20% из них
     number_of_experiments = (number_of_experiments * 1.2).to_int
 
-    # choose a random number between min and max
+    # выбираем рандомное число между мин и макс
     max = c
     min = a
     current = PERT.get_random min,max
@@ -99,8 +97,7 @@ module PERT
     matematics samples
   end
   def PERT.neyman_method(a,b,c,number_of_experiments)
-    # neyman or accept and reject method
-    # maximum of pdf function occurs at mode of pdf which is b here
+    # метод Неймана
     maximum_of_pdf = PERT.pdf(b ,a,b,c)
 
     samples = []
@@ -120,7 +117,19 @@ module PERT
 
   end
 
-  puts("This code samples from PERT distribution with 3 methods: Inverse, Metropolis and Neyman enter these parameters")
+  puts ("\nІнформація щодо використання програмного забезпечення, яке генерує випадкові велечини за PERT розподілом.")
+  puts "\nУ даній роботі описано методи та алгоритми генерування випадкової величині, такі як Метод зворотної функції, Метод Неймана та Метод Метрополіса."
+  puts "\nЩоб розпочати, необхідно ввести наступні значення:"
+  puts ("
+a - мінімальне значення якого може набувати змінна
+b - найбільш ймовірне значення якого може набувати змінна (Потрібно вводити число більше, ніж а)
+c - максимальне значення якого може набувати змінна (Тож потрібно вводити число більше, ніж а та b)
+n - кількість експериментів")
+  puts("Після коректного введення усіх даних будуть розраховані випадкові величини, і також будуть визначені час виконання,
+математичне очікування, дисперсія і середньоквадратичне відхилення для кожного методу.")
+  puts "\nРезультати обчислень можна буде побачити у файлі Results.csv та гістограми у файлі Output.xlsx"
+  puts("\nРоботу виконала студентка групи КС-43 Алексеєнкова Дарья\n")
+  puts ("\n")
   puts("Введіть параметри:")
   print "a ="
   STDOUT.flush
