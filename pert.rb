@@ -5,7 +5,7 @@ require 'distribution'
 require 'pycall/import'
 require 'benchmark'
 include PyCall::Import
-
+pyfrom :scipy, import: :special
 
 module PERT
 
