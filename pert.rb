@@ -3,6 +3,7 @@ require 'csv'
 require 'integration'
 require 'distribution'
 require 'pycall/import'
+require 'benchmark'
 include PyCall::Import
 
 
@@ -148,16 +149,23 @@ module PERT
   STDOUT.flush
   n = (gets.chomp).to_i
 
-
-
-  inverse_method a,b,c,n
-  metropolis_method a,b,c,n
-  neyman_method a,b,c,n
+  #inverse_method a,b,c,n
+  #metropolis_method a,b,c,n
+  #neyman_method a,b,c,n
 
   #inverse_method 0.0,30.0,100.0,10000
   #metropolis_method 0.0,30.0,50.0,10000
   #neyman_method 0.0,30.0,50.0,10000
+  time = Benchmark.measure {
+    puts("Відповідь:")
+    metropolis_method a, b, c, n
+    neyman_method a, b, c, n
+    inverse_method a, b, c, n
+  }
+  puts("Час виконання методів (с):",time.real)
+  cmd = "Output.xlsx"
 
+  system('start "" ' + cmd)
   puts("Results.csv file is saved")
 
 end
